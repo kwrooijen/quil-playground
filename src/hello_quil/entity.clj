@@ -4,29 +4,38 @@
    [clojure.core.matrix.random :as r]
    [clojure.core.matrix :as m :refer [mget mset]]))
 
-(defn new [window]
-  {:entity/location     (m/div @window 2)
-   :entity/velocity     (m/array [0 0])
-   :entity/acceleration (m/array [0 0])
-   :entity/radius       50
-   :entity.ref/window   window})
+(defn new [w h]
+  (let [mass (inc (inc (rand-int 5)))]
+    {:entity/location     (m/array [(rand-int w) (rand-int h)])
+     :entity/velocity     (m/array [0 0])
+     :entity/acceleration (m/array [0 0])
+     :entity/radius       (* mass 10)
+     :entity/mass         mass}))
 
-(defn update-bounds [location window]
+(defn update-bounds [{:entity/keys [location velocity] :as entity} window]
   (cond
     (> (mget location 0) (mget window 0))
-    (mset location 0  (mget window 0))
+    (-> entity
+        (update :entity/velocity mset 0 (* -1 (mget velocity 0)))
+        (update :entity/location mset 0 (mget window 0)))
 
     (< (mget location 0) 0)
-    (mset location 0 0)
+    (-> entity
+        (update :entity/velocity mset 0 (* -1 (mget velocity 0)))
+        (update :entity/location mset 0 0))
 
     (> (mget location 1) (mget window 1))
-    (mset location 1 (mget window 1))
+    (-> entity
+        (update :entity/velocity mset 1 (* -1 (mget velocity 1)))
+        (update :entity/location mset 1 (mget window 1)))
 
     (< (mget location 1) 0)
-    (mset location 1 0)
+    (-> entity
+        (update :entity/velocity mset 1 (* -1 (mget velocity 1)))
+        (update :entity/location mset 1 0))
 
     :else
-    location))
+    entity))
 
 (defn limit [v m]
   (if (> (m/magnitude-squared v) (* m m))
@@ -34,17 +43,23 @@
         (m/mul m))
     v))
 
+(defn apply-force [{:entity/keys [mass] :as entity} f]
+  (update entity :entity/acceleration m/add (m/div f mass)))
+
+(defn apply-net-force [entity f]
+  (update entity :entity/acceleration m/add f))
+
 (defn step [{:entity/keys [velocity acceleration location]
-             :entity.ref/keys [window]
              :as entity}
             time
-            mouse]
+            mouse
+            window]
   (-> entity
-      (assoc :entity/acceleration  (m/mul (m/normalise (m/sub mouse location))))
-      (update :entity/velocity     m/add acceleration)
-      (update :entity/velocity     limit 10)
-      (update :entity/location     m/add velocity)
-      (update :entity/location     update-bounds @window)))
+      (update :entity/velocity m/add acceleration)
+      (update :entity/velocity limit 10)
+      (update :entity/location m/add velocity)
+      (update-bounds @window)
+      (update :entity/acceleration m/mul 0)))
 
 (defn draw [{:entity/keys [location radius]}]
   (q/fill 255 0 0)
