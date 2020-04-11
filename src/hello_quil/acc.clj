@@ -10,14 +10,18 @@
 
 (def center (m/array [(/ width 2) (/ height 2)]))
 
+(defn mouse-moved [state {:keys [x y]}]
+  (assoc state :mouse (m/array [x y])))
+
 (defn setup []
   (q/frame-rate 30)
   {:time 0
+   :mouse (m/array [0 0])
    :ball (entity/new window)})
 
-(defn update-state [{:keys [time] :as state}]
+(defn update-state [{:keys [time mouse] :as state}]
   (-> state
-      (update :ball entity/step time)
+      (update :ball entity/step time mouse)
       (update :time + (/ (q/current-frame-rate) 1000))))
 
 (defn draw-state [state]
@@ -30,4 +34,5 @@
   :update update-state
   :draw draw-state
   :features [:keep-on-top]
+  :mouse-moved mouse-moved
   :middleware [middleware/fun-mode])

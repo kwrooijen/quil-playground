@@ -14,16 +14,16 @@
 (defn update-bounds [location window]
   (cond
     (> (mget location 0) (mget window 0))
-    (mset location 0 0)
+    (mset location 0  (mget window 0))
 
     (< (mget location 0) 0)
-    (mset location 0 (mget window 0))
+    (mset location 0 0)
 
     (> (mget location 1) (mget window 1))
-    (mset location 1 0)
+    (mset location 1 (mget window 1))
 
     (< (mget location 1) 0)
-    (mset location 1 (mget window 1))
+    (mset location 1 0)
 
     :else
     location))
@@ -34,18 +34,15 @@
         (m/mul m))
     v))
 
-(defn step [{:entity/keys [velocity acceleration]
+(defn step [{:entity/keys [velocity acceleration location]
              :entity.ref/keys [window]
              :as entity}
-            time]
+            time
+            mouse]
   (-> entity
-      ;; (assoc :entity/acceleration (r/sample-normal 2))
-      ;; (update :entity/acceleration  mset 1 0)
-      (update :entity/acceleration  mset 0 (- (q/noise time) 0.5))
-      (update :entity/acceleration  mset 1 (- (q/noise (+ 1000 time)) 0.5))
-      (update :entity/acceleration  m/mul 5)
+      (assoc :entity/acceleration  (m/mul (m/normalise (m/sub mouse location))))
       (update :entity/velocity     m/add acceleration)
-      (update :entity/velocity     limit 5)
+      (update :entity/velocity     limit 10)
       (update :entity/location     m/add velocity)
       (update :entity/location     update-bounds @window)))
 
