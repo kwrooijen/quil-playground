@@ -55,3 +55,33 @@ Direction. Single unit vector.
 #### A (Surface Area)
 
 #### C (coefficient)
+
+
+## Gravitational Attraction
+
+((G * M1 * M2) / d2) * r^
+
+## M (mass)
+
+## d (distance)
+
+## r (direction)
+
+## G universal gravitational constant
+
+
+# SOHCAHTOA
+
+```
+hypotenuse   /|
+          /   |
+      /       | opposite
+   /          |
+/             |
+--------------|
+    Adjacennt
+```
+
+Sin = Opposite / Hypotenuse
+Cos = Adjacent / Hypotenuse
+Tan = Opposite / Adjacent

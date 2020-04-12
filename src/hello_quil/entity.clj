@@ -6,7 +6,7 @@
 
 (defn new [w h]
   (let [mass (inc (inc (rand-int 5)))]
-    {:entity/location     (m/array [(rand-int w) (rand-int h)])
+    {:entity/location     (m/array [(rand-int w) (rand-int (/ h 3)) ])
      :entity/velocity     (m/array [0 0])
      :entity/acceleration (m/array [0 0])
      :entity/radius       (* mass 10)
