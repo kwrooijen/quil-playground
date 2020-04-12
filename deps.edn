@@ -1,4 +1,5 @@
 {:deps
  {org.clojure/clojure {:mvn/version "1.10.1"}
   quil {:mvn/version "3.1.0"}
-  net.mikera/core.matrix {:mvn/version "0.62.0"}}}
+  net.mikera/core.matrix {:mvn/version "0.62.0"}
+  org.jbox2d/jbox2d-library {:mvn/version "2.2.1.1"}}}
